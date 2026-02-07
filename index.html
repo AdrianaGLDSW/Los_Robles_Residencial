@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Inicio de sesión: Los Robles</title>
+        <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <style>
+            :root{
+                --green:#2d5c27;
+                --green-light:#4e8f3a;
+                --gray:#ddd;
+            }
+
+            body{
+                margin:0;
+                font-family:Arial, Helvetica, sans-serif;
+                background:
+                    linear-gradient(rgba(234,243,234,.9),rgba(234,243,234,.9)),
+                    url("https://media.istockphoto.com/id/1217425026/es/foto/una-vista-de-la-calle-de-un-barrio.jpg");
+                background-size:cover;
+                background-position:center;
+            }
+
+            .app{
+                min-height:100vh;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                padding:20px;
+            }
+
+            .card{
+                background:#fff;
+                width:100%;
+                max-width:420px;
+                padding:32px;
+                border-radius:16px;
+                box-shadow:0 15px 30px rgba(0,0,0,.12);
+            }
+
+            .logo{text-align:center;margin-bottom:10px;}
+            .logo img{max-width:140px;}
+
+            h1{text-align:center;color:var(--green);}
+            .subtitle{text-align:center;font-size:14px;color:#666;margin-bottom:25px;}
+
+            .form-group{margin-bottom:16px;position:relative;}
+            label{font-size:14px;font-weight:bold;display:block;margin-bottom:6px;}
+
+            input[type="email"],
+            input[type="password"],
+            input[type="text"]{
+                width:95%;
+                padding:12px;
+                border-radius:8px;
+                border:1px solid var(--gray);
+                font-size:15px;
+            }
+
+            input.valid{border-color:var(--green);}
+            input.invalid{border-color:#c0392b;}
+
+            .toggle{
+                position:absolute;
+                right:10px;
+                top:34px;
+                cursor:pointer;
+            }
+
+            .checkbox{
+                display:flex;
+                align-items:center;
+                gap:10px;
+                margin:8px 0;
+                font-size:14px;
+            }
+
+            .checkbox input{width:16px;height:16px;}
+
+            .checkbox a {
+                color: var(--green-light);
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+            .checkbox a:hover {
+                text-decoration: underline;
+            }
+
+            button{
+                width:100%;
+                padding:14px;
+                background:linear-gradient(to right,var(--green),var(--green-light));
+                border:none;
+                border-radius:8px;
+                color:#fff;
+                font-size:16px;
+                cursor:pointer;
+            }
+
+            button:disabled{opacity:.6;cursor:not-allowed;}
+
+            .error{color:#c0392b;font-size:13px;margin-top:4px;}
+
+            .divider{
+                margin:20px 0;
+                border-top:1px solid #e0e0e0;
+            }
+
+            .links{text-align:center;font-size:14px;}
+            .links a{color:var(--green-light);text-decoration:none;font-weight:500;}
+
+            .security{
+                text-align:center;
+                margin-top:15px;
+                font-size:14px;
+                color:var(--green);
+            }
+
+            footer{
+                margin-top: auto;
+                font-size:13px;
+                color:#555;
+                border: 1px solid #555;
+                padding: 20px;
+                border-radius: 5px;
+                background: #fcfafa;
+                width: 100%;
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="root"></div>
+
+        <script type="text/babel">
+            const {useState} = React;
+
+                function App(){
+                const [email,setEmail]=useState("");
+                const [password,setPassword]=useState("");
+                const [show,setShow]=useState(false);
+                const [robot,setRobot]=useState(false);
+                const [terms,setTerms]=useState(false);
+                const [errors,setErrors]=useState({});
+
+                const emailValid=/\S+@\S+\.\S+/.test(email);
+                const passValid=password.length>=6;
+
+                const handleSubmit=e=>{
+                    e.preventDefault();
+                    let err={};
+
+                    if(!emailValid) err.email="Correo no válido";
+                    if(!passValid) err.password="Mínimo 6 caracteres";
+                    if(!robot) err.robot="Confirma que no eres un robot";
+                    if(!terms) err.terms="Acepta las políticas";
+
+                    setErrors(err);
+
+                    if(Object.keys(err).length===0){
+                    window.location.href = "principal.html";
+                    }
+                };
+
+                return(
+                    <div className="app">
+                    <div className="card">
+                        <div className="logo">
+                        <img src="Logo Los Robles app.png" alt="Los Robles"/>
+                        </div>
+
+                        <h1>Iniciar sesión</h1>
+                        <p className="subtitle">Gestión y pagos en un solo lugar</p>
+
+                        <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label>Correo electrónico:</label>
+                            <input
+                            type="email"
+                            className={email ? (emailValid?"valid":"invalid") : ""}
+                            value={email}
+                            onChange={e=>setEmail(e.target.value)}
+                            />
+                            {errors.email && <div className="error">{errors.email}</div>}
+                        </div>
+
+                        <div className="form-group">
+                            <label>Contraseña:</label>
+                            <input
+                            type={show?"text":"password"}
+                            className={password ? (passValid?"valid":"invalid") : ""}
+                            value={password}
+                            onChange={e=>setPassword(e.target.value)}
+                            />
+                            <span className="toggle" onClick={() => setShow(!show)}>
+                            {show ? "👁‍🗨" : "👁"}
+                            </span>
+
+                            {errors.password && <div className="error">{errors.password}</div>}
+                        </div>
+
+                        <label className="checkbox">
+                            <input type="checkbox" checked={robot} onChange={()=>setRobot(!robot)}/>
+                            No soy un robot
+                        </label>
+                        {errors.robot && <div className="error">{errors.robot}</div>}
+
+                        <label className="checkbox">
+                            <input type="checkbox" checked={terms} onChange={()=>setTerms(!terms)}/>
+                            Acepto las <a href="politicas-privacidad.html" target="_blank" onClick= {(e) => e.stopPropagation()}> 
+                                políticas de privacidad</a>
+                        </label>
+                        {errors.terms && <div className="error">{errors.terms}</div>}
+
+                        <button type="submit">Iniciar sesión</button>
+                        </form>
+
+                        <div className="divider"></div>
+
+                        <div className="links">
+                        <p>¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
+                        <a href="recontraseña.html">¿Olvidaste tu contraseña?</a>
+                        </div>
+
+                        <div className="divider"></div>
+
+                        <div className="security">
+                        🔒 Tu información está protegida<br/>Pagos seguros y cifrados
+                        </div>
+                    </div>
+
+                    <footer>
+                        Los Robles Residencial © 2026. Todos los derechos reservados.
+                    </footer>
+                    </div>
+                );
+                }
+
+            ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+        </script>
+    </body>
+</html>

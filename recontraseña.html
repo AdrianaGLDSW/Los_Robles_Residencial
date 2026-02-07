@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Recuperar contraseña: Los Robles</title>
+        <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <style>
+            :root{
+                --green:#2d5c27;
+                --green-light:#4e8f3a;
+                --gray:#ddd;
+                --red:#c0392b;
+            }
+
+            body{
+                margin:0;
+                font-family:Arial, Helvetica, sans-serif;
+                background:
+                    linear-gradient(rgba(234,243,234,.9),rgba(234,243,234,.9)),
+                    url("https://media.istockphoto.com/id/1217425026/es/foto/una-vista-de-la-calle-de-un-barrio.jpg");
+                background-size:cover;
+                background-position:center;
+            }
+
+            .app{
+                min-height:100vh;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                padding:20px;
+            }
+
+            .card{
+                background:#fff;
+                width:100%;
+                max-width:420px;
+                padding:32px;
+                border-radius:16px;
+                box-shadow:0 15px 30px rgba(0,0,0,.12);
+            }
+
+            .logo{
+                text-align:center;
+                margin-bottom:10px;
+            }
+
+            .logo img{
+                max-width:140px;
+            }
+
+            h1{
+                text-align:center;
+                color:var(--green);
+                margin-bottom:5px;
+            }
+
+            .subtitle{
+                text-align:center;
+                font-size:14px;
+                color:#666;
+                margin-bottom:25px;
+            }
+
+            .form-group{
+                margin-bottom:18px;
+            }
+
+            label{
+                font-size:14px;
+                font-weight:bold;
+                display:block;
+                margin-bottom:6px;
+            }
+
+            input{
+                width:95%;
+                padding:12px;
+                border-radius:8px;
+                border:1px solid var(--gray);
+                font-size:15px;
+            }
+
+            input.valid{border-color:var(--green);}
+            input.invalid{border-color:var(--red);}
+
+            button{
+                width:100%;
+                padding:14px;
+                background:linear-gradient(to right,var(--green),var(--green-light));
+                border:none;
+                border-radius:8px;
+                color:#fff;
+                font-size:16px;
+                cursor:pointer;
+                margin-top:10px;
+            }
+
+            button:disabled{
+                opacity:.6;
+                cursor:not-allowed;
+            }
+
+            .error{
+                color:var(--red);
+                font-size:13px;
+                margin-top:5px;
+            }
+
+            .success{
+                color:var(--green);
+                font-size:14px;
+                margin-top:10px;
+                text-align:center;
+            }
+
+            .links{
+                text-align:center;
+                margin-top:20px;
+                font-size:14px;
+            }
+
+            .links a{
+                color:var(--green-light);
+                text-decoration:none;
+                font-weight:500;
+            }
+
+            .links a:hover{
+                text-decoration:underline;
+            }
+
+            footer{
+                margin-top:auto;
+                font-size:13px;
+                color:#555;
+                border:1px solid #ddd;
+                padding:20px;
+                border-radius:5px;
+                background:#fcfafa;
+                width:100%;
+                text-align:center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="root"></div>
+
+        <script type="text/babel">
+            const { useState } = React;
+
+            function App(){
+                const [email,setEmail] = useState("");
+                const [submitted,setSubmitted] = useState(false);
+                const [error,setError] = useState("");
+
+                const emailValid = /\S+@\S+\.\S+/.test(email);
+
+                const handleSubmit = e => {
+                e.preventDefault();
+                setError("");
+
+                if(!emailValid){
+                    setError("Ingresa un correo electrónico válido");
+                    return;
+                }
+
+                setSubmitted(true);
+                };
+
+                return(
+                <div className="app">
+                    <div className="card">
+
+                    <div className="logo">
+                        <img src="Logo Los Robles app.png" alt="Los Robles"/>
+                    </div>
+
+                    <h1>Recuperar contraseña</h1>
+                    <p className="subtitle">
+                        Te enviaremos un enlace para restablecer tu contraseña
+                    </p>
+
+                    {!submitted ? (
+                        <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label>Correo electrónico</label>
+                            <input
+                            type="email"
+                            value={email}
+                            className={email ? (emailValid ? "valid" : "invalid") : ""}
+                            onChange={e=>setEmail(e.target.value)}
+                            placeholder="tucorreo@dominio.com"
+                            />
+                            {error && <div className="error">{error}</div>}
+                        </div>
+
+                        <button type="submit">
+                            Enviar enlace de recuperación
+                        </button>
+                        </form>
+                    ) : (
+                        <div className="success">
+                         Recibirás un enlace para restablecer tu contraseña.
+                        </div>
+                    )}
+
+                    <div className="links">
+                        <a href="index.html">Volver a iniciar sesión</a>
+                    </div>
+
+                    </div>
+
+                    <footer>
+                    Los Robles Residencial © 2026. Todos los derechos reservados.
+                    </footer>
+                </div>
+                );
+            }
+
+            ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+        </script>
+    </body>
+</html>

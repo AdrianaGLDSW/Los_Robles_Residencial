@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registro | Los Robles</title>
+        <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <style>
+            :root{
+                --green:#2d5c27;
+                --green-light:#4e8f3a;
+                --gray:#ddd;
+                --red:#c0392b;
+            }
+
+            body{
+                margin:0;
+                font-family:Arial, Helvetica, sans-serif;
+                background:
+                    linear-gradient(rgba(234,243,234,.9),rgba(234,243,234,.9)),
+                    url("https://media.istockphoto.com/id/1217425026/es/foto/una-vista-de-la-calle-de-un-barrio.jpg");
+                background-size:cover;
+                background-position:center;
+            }
+
+            .app{
+                min-height:100vh;
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+                padding:20px;
+            }
+
+            .card{
+                background:#fff;
+                width:100%;
+                max-width:450px;
+                padding:32px;
+                border-radius:16px;
+                box-shadow:0 15px 30px rgba(0,0,0,.12);
+            }
+
+            .logo{text-align:center;margin-bottom:10px;}
+            .logo img{max-width:140px;}
+
+            h1{text-align:center;color:var(--green);}
+            .subtitle{text-align:center;font-size:14px;color:#666;margin-bottom:25px;}
+
+            .form-group{margin-bottom:18px;position:relative;}
+            label{font-size:14px;font-weight:bold;display:block;margin-bottom:6px;}
+
+            input{
+                width:95%;
+                padding:12px;
+                border-radius:8px;
+                border:1px solid var(--gray);
+                font-size:15px;
+            }
+
+            input.valid{border-color:var(--green);background:#f8fff8;}
+            input.invalid{border-color:var(--red);}
+
+            .toggle{
+                position:absolute;
+                right:10px;
+                top:34px;
+                cursor:pointer;
+                font-size:18px;
+            }
+
+            .error{color:var(--red);font-size:13px;margin-top:4px;}
+
+            button{
+                width:100%;
+                padding:14px;
+                background:linear-gradient(to right,var(--green),var(--green-light));
+                border:none;
+                border-radius:8px;
+                color:#fff;
+                font-size:16px;
+                cursor:pointer;
+            }
+
+            button:disabled{opacity:.6;cursor:not-allowed;}
+
+            .divider{
+                margin:25px 0;
+                border-top:1px solid #e0e0e0;
+            }
+
+            .links{text-align:center;font-size:14px;}
+            .links a{color:var(--green-light);text-decoration:none;font-weight:500;}
+
+            footer{
+                margin-top:30px;
+                font-size:13px;
+                color:#555;
+                border:1px solid #ddd;
+                padding:15px;
+                border-radius:5px;
+                background:#fcfafa;
+                width:100%;
+                text-align:center;
+            }
+
+            .toast{
+                position:fixed;
+                top:20px;
+                right:20px;
+                background:var(--green);
+                color:white;
+                padding:15px 20px;
+                border-radius:8px;
+                box-shadow:0 5px 15px rgba(0,0,0,.2);
+                font-size:14px;
+                z-index:999;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="root"></div>
+
+        <script type="text/babel">
+            const { useState } = React;
+
+            function App(){
+                const [name,setName]=useState("");
+                const [email,setEmail]=useState("");
+                const [house,setHouse]=useState("");
+                const [password,setPassword]=useState("");
+                const [confirm,setConfirm]=useState("");
+                const [showPass,setShowPass]=useState(false);
+                const [showConfirm,setShowConfirm]=useState(false);
+                const [errors,setErrors]=useState({});
+                const [toast,setToast]=useState(false);
+
+                const nameValid=/^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]{3,}$/.test(name);
+                const emailValid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                const houseValid=/^\d{3}$/.test(house);
+
+                const hasMin=password.length>=8;
+                const hasUpper=/[A-Z]/.test(password);
+                const hasNum=/\d/.test(password);
+                const hasSpecial=/[!@#$%^&*]/.test(password);
+
+                const passwordValid=hasMin && hasUpper && hasNum && hasSpecial;
+                const match=password===confirm && confirm.length>0;
+
+                const formValid=nameValid && emailValid && houseValid && passwordValid && match;
+
+                const handleSubmit=e=>{
+                    e.preventDefault();
+                    let err={};
+
+                    if(!passwordValid) err.password="La contraseña no cumple los requisitos";
+                    if(!match) err.confirm="Las contraseñas no coinciden";
+
+                    setErrors(err);
+
+                    if(Object.keys(err).length===0){
+                        const user={name,email,house,password};
+                        localStorage.setItem("usuarioLosRobles",JSON.stringify(user));
+
+                        setToast(true);
+
+                        setName("");setEmail("");setHouse("");
+                        setPassword("");setConfirm("");
+
+                        setTimeout(()=>window.location.href="index.html",2000);
+                    }
+                };
+
+                return(
+                    <div className="app">
+                        {toast && <div className="toast">¡Usuario registrado exitosamente!</div>}
+
+                        <div className="card">
+                            <div className="logo">
+                                <img src="Logo Los Robles app.png" alt="Los Robles"/>
+                            </div>
+
+                            <h1>Crear cuenta</h1>
+                            <p className="subtitle">Únete a la comunidad</p>
+
+                            <form onSubmit={handleSubmit}>
+                                <div className="form-group">
+                                    <label>Nombre completo</label>
+                                    <input className={name && nameValid?"valid":""}
+                                        value={name} onChange={e=>setName(e.target.value)}/>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Correo electrónico</label>
+                                    <input className={email && emailValid?"valid":""}
+                                        value={email} onChange={e=>setEmail(e.target.value)}/>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Número de casa</label>
+                                    <input className={house && houseValid?"valid":""}
+                                        value={house}
+                                        onChange={e=>setHouse(e.target.value.replace(/\D/g,"").slice(0,3))}/>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Contraseña</label>
+                                    <input type={showPass?"text":"password"}
+                                        className={password?(passwordValid?"valid":"invalid"):""}
+                                        value={password} onChange={e=>setPassword(e.target.value)}/>
+                                    <span className="toggle" onClick={()=>setShowPass(!showPass)}>👁</span>
+                                    {errors.password && <div className="error">{errors.password}</div>}
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Confirmar contraseña</label>
+                                    <input type={showConfirm?"text":"password"}
+                                        className={confirm?(match?"valid":"invalid"):""}
+                                        value={confirm} onChange={e=>setConfirm(e.target.value)}/>
+                                    <span className="toggle" onClick={()=>setShowConfirm(!showConfirm)}>👁</span>
+                                    {errors.confirm && <div className="error">{errors.confirm}</div>}
+                                </div>
+
+                                <button disabled={!formValid}>Registrarse</button>
+                            </form>
+
+                            <div className="divider"></div>
+
+                            <div className="links">
+                              ¿Ya tienes cuenta?  <a href="index.html"> Inicia sesión</a>
+                            </div>
+                        </div>
+
+                        <footer>
+                            Los Robles Residencial © 2026. Todos los derechos reservados.
+                        </footer>
+                    </div>
+                );
+            }
+
+            ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+        </script>
+    </body>
+</html>
