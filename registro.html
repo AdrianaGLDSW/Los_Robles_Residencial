@@ -93,6 +93,10 @@
             .links{text-align:center;font-size:14px;}
             .links a{color:var(--green-light);text-decoration:none;font-weight:500;}
 
+            a:hover {
+                text-decoration: underline;
+            }
+
             footer{
                 margin-top:30px;
                 font-size:13px;
@@ -116,6 +120,25 @@
                 box-shadow:0 5px 15px rgba(0,0,0,.2);
                 font-size:14px;
                 z-index:999;
+            }
+
+            .password-rules{
+                margin-top:8px;
+                font-size:13px;
+            }
+
+            .password-rules p{
+                margin:3px 0;
+                color:#777;
+            }
+
+            .password-rules .ok{
+                color:var(--green);
+                font-weight:bold;
+            }
+
+            .password-rules .fail{
+                color:#999;
             }
         </style>
     </head>
@@ -187,35 +210,55 @@
 
                             <form onSubmit={handleSubmit}>
                                 <div className="form-group">
-                                    <label>Nombre completo</label>
+                                    <label>Nombre completo:</label>
                                     <input className={name && nameValid?"valid":""}
                                         value={name} onChange={e=>setName(e.target.value)}/>
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Correo electrónico</label>
+                                    <label>Correo electrónico:</label>
                                     <input className={email && emailValid?"valid":""}
                                         value={email} onChange={e=>setEmail(e.target.value)}/>
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Número de casa</label>
+                                    <label>Número de casa:</label>
                                     <input className={house && houseValid?"valid":""}
                                         value={house}
                                         onChange={e=>setHouse(e.target.value.replace(/\D/g,"").slice(0,3))}/>
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Contraseña</label>
-                                    <input type={showPass?"text":"password"}
+                                    <label>Contraseña:</label>
+                                    <input
+                                        type={showPass?"text":"password"}
                                         className={password?(passwordValid?"valid":"invalid"):""}
-                                        value={password} onChange={e=>setPassword(e.target.value)}/>
+                                        value={password}
+                                        onChange={e=>setPassword(e.target.value)}
+                                    />
+
                                     <span className="toggle" onClick={()=>setShowPass(!showPass)}>👁</span>
+
+                                    <div className="password-rules">
+                                        <p className={hasMin ? "ok" : "fail"}>
+                                            {hasMin ? "✔" : "○"} Mínimo 8 caracteres.
+                                        </p>
+                                        <p className={hasUpper ? "ok" : "fail"}>
+                                            {hasUpper ? "✔" : "○"} Al menos una letra mayúscula.
+                                        </p>
+                                        <p className={hasNum ? "ok" : "fail"}>
+                                            {hasNum ? "✔" : "○"} Al menos un número.
+                                        </p>
+                                        <p className={hasSpecial ? "ok" : "fail"}>
+                                            {hasSpecial ? "✔" : "○"} Un carácter especial (!@#$%^&*)
+                                        </p>
+                                    </div>
+
                                     {errors.password && <div className="error">{errors.password}</div>}
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Confirmar contraseña</label>
+                                    <label>Confirmar contraseña:</label>
                                     <input type={showConfirm?"text":"password"}
                                         className={confirm?(match?"valid":"invalid"):""}
                                         value={confirm} onChange={e=>setConfirm(e.target.value)}/>
