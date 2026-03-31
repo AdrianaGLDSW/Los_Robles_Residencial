@@ -239,25 +239,66 @@
 
                 const [pagos,setPagos]=useState([]);
 
+                const formatearFecha = (fecha) => {
+                const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+                const date = new Date(fecha);
+
+                const dia = String(date.getDate()).padStart(2,'0');
+                const mes = meses[date.getMonth()];
+                const anio = date.getFullYear();
+
+                return `${dia}-${mes}-${anio}`;
+                };
+
                 useEffect(()=>{
+                    const hamburger = document.getElementById("hamburger");
+                    const navMenu = document.getElementById("nav-menu");
+                    
+                    hamburger.addEventListener("click", () => {
+                        hamburger.classList.toggle("active");
+                        navMenu.classList.toggle("active");
+                    });
+                    
+                    document.querySelectorAll(".nav-link").forEach(n => {
+                        n.addEventListener("click", () => {
+                            hamburger.classList.remove("active");
+                            navMenu.classList.remove("active");
+                        });
+                    });
+                    
+                    document.addEventListener("click", (event) => {
+                        const isClickInsideNav = navMenu.contains(event.target) || hamburger.contains(event.target);
+                        
+                        if (!isClickInsideNav && navMenu.classList.contains("active")) {
+                            hamburger.classList.remove("active");
+                            navMenu.classList.remove("active");
+                        }
+                    });
+                    
+                    document.addEventListener("keydown", (event) => {
+                        if (event.key === "Escape" && navMenu.classList.contains("active")) {
+                            hamburger.classList.remove("active");
+                            navMenu.classList.remove("active");
+                        }
+                    });
 
                     const data = [
                     {
-                    fecha:"01-Feb-2026",
+                    fecha:"2026-02-01",
                     folio:"A123",
                     concepto:"Mantenimiento",
                     metodo:"Transferencia",
                     monto:850
                     },
                     {
-                    fecha:"15-Feb-2026",
+                    fecha:"2026-02-15",
                     folio:"A122",
                     concepto:"Mantenimiento",
                     metodo:"Tarjeta",
                     monto:850
                     },
                     {
-                    fecha:"20-Ene-2026",
+                    fecha:"2026-01-20",
                     folio:"A121",
                     concepto:"Mantenimiento",
                     metodo:"Efectivo",
@@ -270,6 +311,29 @@
                     setPagos(data);
 
                 },[]);
+
+                const descargarComprobante = (pago) => {
+
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    doc.setFontSize(18);
+                    doc.text("Los Robles Residencial", 20, 20);
+
+                    doc.setFontSize(14);
+                    doc.text("Comprobante de pago", 20, 35);
+
+                    doc.setFontSize(11);
+                    doc.text(`Folio: ${pago.folio}`, 20, 55);
+                    doc.text(`Fecha: ${pago.fecha}`, 20, 65);
+                    doc.text(`Concepto: ${pago.concepto}`, 20, 75);
+                    doc.text(`Método de pago: ${pago.metodo}`, 20, 85);
+                    doc.text(`Monto pagado: $${pago.monto}`, 20, 95);
+
+                    doc.text("Gracias por su pago", 20, 120);
+
+                    doc.save(`Comprobante_${pago.folio}.pdf`);
+                };
 
                 const descargarPDF = () => {
 
@@ -312,18 +376,26 @@
                                         <th>Concepto</th>
                                         <th>Método</th>
                                         <th>Monto</th>
+                                        <th>Recibo</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     {pagos.map((pago,index)=>(
-                                    <tr key={index}>
-                                        <td>{pago.fecha}</td>
-                                        <td>{pago.folio}</td>
-                                        <td>{pago.concepto}</td>
-                                        <td>{pago.metodo}</td>
-                                        <td>${pago.monto}</td>
-                                    </tr>
+                                        <tr key={index}>
+                                            <td>{formatearFecha(pago.fecha)}</td>
+                                            <td>{pago.folio}</td>
+                                            <td>{pago.concepto}</td>
+                                            <td>{pago.metodo}</td>
+                                            <td>${pago.monto}</td>
+
+                                            <td>
+                                                <button onClick={() => descargarComprobante(pago)}>
+                                                    Descargar
+                                                </button>
+                                            </td>
+
+                                        </tr>
                                     ))}
                                 </tbody>
                             </table>
@@ -340,36 +412,6 @@
 
             ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
         
-        const hamburger = document.getElementById("hamburger");
-            const navMenu = document.getElementById("nav-menu");
-            
-            hamburger.addEventListener("click", () => {
-                hamburger.classList.toggle("active");
-                navMenu.classList.toggle("active");
-            });
-            
-            document.querySelectorAll(".nav-link").forEach(n => {
-                n.addEventListener("click", () => {
-                    hamburger.classList.remove("active");
-                    navMenu.classList.remove("active");
-                });
-            });
-            
-            document.addEventListener("click", (event) => {
-                const isClickInsideNav = navMenu.contains(event.target) || hamburger.contains(event.target);
-                
-                if (!isClickInsideNav && navMenu.classList.contains("active")) {
-                    hamburger.classList.remove("active");
-                    navMenu.classList.remove("active");
-                }
-            });
-            
-            document.addEventListener("keydown", (event) => {
-                if (event.key === "Escape" && navMenu.classList.contains("active")) {
-                    hamburger.classList.remove("active");
-                    navMenu.classList.remove("active");
-                }
-            });
         </script>
 
     </body>
