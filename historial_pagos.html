@@ -8,6 +8,7 @@
         <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
         <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
         <style>
             :root{
@@ -312,27 +313,69 @@
 
                 },[]);
 
-                const descargarComprobante = (pago) => {
+               const descargarComprobante = (pago) => {
 
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
 
-                    doc.setFontSize(18);
-                    doc.text("Los Robles Residencial", 20, 20);
+                    const logo = new Image();
+                    logo.src = "./Logo Los Robles app.png";
 
-                    doc.setFontSize(14);
-                    doc.text("Comprobante de pago", 20, 35);
+                    logo.onload = () => {
 
-                    doc.setFontSize(11);
-                    doc.text(`Folio: ${pago.folio}`, 20, 55);
-                    doc.text(`Fecha: ${pago.fecha}`, 20, 65);
-                    doc.text(`Concepto: ${pago.concepto}`, 20, 75);
-                    doc.text(`Método de pago: ${pago.metodo}`, 20, 85);
-                    doc.text(`Monto pagado: $${pago.monto}`, 20, 95);
+                        doc.addImage(logo, 'PNG', 15, 10, 30, 30);
 
-                    doc.text("Gracias por su pago", 20, 120);
+                        doc.setFontSize(22);
+                        doc.setTextColor(33, 80, 27);
+                        doc.text("Los Robles Residencial", 55, 20);
 
-                    doc.save(`Comprobante_${pago.folio}.pdf`);
+                        doc.setFontSize(14);
+                        doc.setTextColor(90);
+                        doc.text("Comprobante de pago", 55, 30);
+
+                        doc.setDrawColor(33, 80, 27);
+                        doc.line(15, 45, 195, 45);
+
+                        doc.setFontSize(12);
+                        doc.setTextColor(0);
+
+                        let y = 65;
+
+                        doc.text(`Folio: ${pago.folio}`, 20, y);
+                        y += 12;
+
+                        doc.text(`Fecha: ${formatearFecha(pago.fecha)}`, 20, y);
+                        y += 12;
+
+                        doc.text(`Concepto: ${pago.concepto}`, 20, y);
+                        y += 12;
+
+                        doc.text(`Método de pago: ${pago.metodo}`, 20, y);
+                        y += 12;
+
+                        doc.text(`Monto pagado: $${pago.monto}`, 20, y);
+
+                        doc.roundedRect(15, 55, 170, 75, 3, 3);
+
+                        doc.setFontSize(11);
+                        doc.setTextColor(100);
+
+                        doc.text(
+                            "Gracias por realizar su pago puntualmente.",
+                            20,
+                            150
+                        );
+
+                        doc.setFontSize(9);
+
+                        doc.text(
+                            "Documento generado automáticamente por el sistema.",
+                            20,
+                            280
+                        );
+
+                        doc.save(`Comprobante_${pago.folio}.pdf`);
+                    };
                 };
 
                 const descargarPDF = () => {
@@ -340,22 +383,64 @@
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
 
-                    doc.setFontSize(16);
-                    doc.text("Historial de pagos - Los Robles", 20, 20);
+                    const logo = new Image();
+                    logo.src = "./Logo Los Robles app.png";
 
-                    let y = 40;
+                    logo.onload = () => {
 
-                    pagos.forEach(pago => {
+                        doc.addImage(logo, 'PNG', 15, 10, 30, 30);
+
+                        doc.setFontSize(22);
+                        doc.setTextColor(33, 80, 27);
+                        doc.text("Los Robles Residencial", 55, 20);
+
+                        doc.setFontSize(14);
+                        doc.setTextColor(100);
+                        doc.text("Historial de pagos", 55, 30);
+
+                        doc.setDrawColor(33, 80, 27);
+                        doc.line(15, 45, 195, 45);
+
+                        doc.autoTable({
+                            startY: 55,
+
+                            head: [[
+                                "Fecha",
+                                "Folio",
+                                "Concepto",
+                                "Método",
+                                "Monto"
+                            ]],
+
+                            body: pagos.map(pago => [
+                                formatearFecha(pago.fecha),
+                                pago.folio,
+                                pago.concepto,
+                                pago.metodo,
+                                `$${pago.monto}`
+                            ]),
+
+                            styles: {
+                                fontSize: 10,
+                                cellPadding: 4
+                            },
+
+                            headStyles: {
+                                fillColor: [33, 80, 27]
+                            }
+                        });
+
                         doc.setFontSize(10);
-                        doc.text(
-                        `${pago.fecha} | ${pago.concepto} | $${pago.monto} | ${pago.metodo}`,
-                        20,
-                        y
-                        );
-                        y += 10;
-                    });
+                        doc.setTextColor(120);
 
-                    doc.save("historial_pagos_los_robles.pdf");
+                        doc.text(
+                            "Documento generado automáticamente por Los Robles Residencial.",
+                            15,
+                            285
+                        );
+
+                        doc.save("historial_pagos_los_robles.pdf");
+                    };
                 };
 
                 return(
